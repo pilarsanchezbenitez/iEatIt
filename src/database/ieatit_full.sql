@@ -1,47 +1,38 @@
 CREATE DATABASE ieatit;
 
-CREATE TABLE Usuario (
-    IdUsuario INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    Nombre varchar(45),
-    Direccion, varchar(45),
-    Correo varchar(45),
-    Telefono varchar(45)
+CREATE TABLE usuario(
+    IdUsuario 			SERIAL PRIMARY KEY,
+    Nombre				VARCHAR(50) 	NOT NULL CHECK(nombre NOT SIMILAR TO '%[0-9]'),
+	Paterno				VARCHAR(50) 	NOT NULL CHECK(paterno NOT SIMILAR TO '%[0-9]'),
+	Materno				VARCHAR(50) CHECK(materno NOT SIMILAR TO '%[0-9]'),
+	Genero				CHAR(1)		NOT NULL CHECK( genero IN ('H','M'))
 );
 
-CREATE TABLE Administrador (
-    IdAdministrador INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    IdUsuario int,
-    Nombre varchar(45),
-    Direccion, varchar(45),
-    Correo varchar(45),
-    Telefono varchar(45),
-    FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+CREATE TABLE cliente(
+	IdCliente 			SERIAL PRIMARY KEY,
+	IdUsuario			INT NOT NULL,
+	CONSTRAINT fk_cliente_usuario FOREIGN KEY(idUsuario) REFERENCES usuario(idUsuario) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT uk_cliente UNIQUE(idUsuario)
 );
 
-CREATE TABLE Repartidor (
-    IdRepartidor INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    IdUsuario int,
-    Nombre varchar(45),
-    Direccion, varchar(45),
-    Correo varchar(45),
-    Telefono varchar(45),
-    FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+CREATE TABLE repartidor(
+	IdRepartidor		SERIAL PRIMARY KEY,
+	IdUsuario			INT NOT NULL,
+	CONSTRAINT fk_repartidor_usuario FOREIGN KEY(idUsuario) REFERENCES usuario(idUsuario) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT uk_repartidor UNIQUE(idUsuario)
 );
 
-CREATE TABLE Cliente (
-    IdCliente INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    IdUsuario int,
-    Nombre varchar(45),
-    Direccion, varchar(45) DEFAULT 'SIN DIRECCION',
-    Correo varchar(45),
-    Telefono varchar(45),
-    FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+CREATE TABLE administrador(
+	IdAdministrador		SERIAL PRIMARY KEY,
+	IdUsuario			INT NOT NULL,
+	CONSTRAINT fk_administrador_usuario FOREIGN KEY(idUsuario) REFERENCES usuario(idUsuario) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT uk_administrador UNIQUE(idUsuario)
 );
 
 CREATE TABLE Alimento (
     IdAlimento INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     Nombre varchar(45) NOT NULL,
-    Precio int, DEFAULT 0,
+    Precio int DEFAULT 0,
     Descripcion varchar(255)
 );
 
@@ -65,49 +56,23 @@ CREATE TABLE Orden (
 **/
 
 
-CREATE TABLE CorreoAdministrador (
-    IdAdministrador int,
-    FOREIGN KEY (IdAdministrador) REFERENCES Administrador(IdAdministrador)
+CREATE TABLE correo(
+	Correo				VARCHAR(100) 	NOT NULL CHECK(Correo LIKE '%_@%_.%_'),
+	IdUsuario 			INT		NOT NULL,
+	CONSTRAINT pk_correo PRIMARY KEY (Correo,IdUsuario),
+	CONSTRAINT fk_correo_usuario FOREIGN KEY(IdUsuario) REFERENCES usuario(IdUsuario) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
-CREATE TABLE CorreoRepartidor (
-    IdRepartidor int,
-    FOREIGN KEY (IdRepartidor) REFERENCES Repartidor(IdRepartidor)
+CREATE TABLE telefono(
+	Telefono			CHAR(10) 	NOT NULL CHECK(Telefono ~ '[0-9]{8,10}'),
+	IdUsuario 			INT		NOT NULL,
+	CONSTRAINT pk_telefono PRIMARY KEY (Telefono,IdUsuario),
+	CONSTRAINT fk_telefono_usuario FOREIGN KEY(IdUsuario) REFERENCES usuario(IdUsuario) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
-CREATE TABLE CorreoCliente (
-    IdCliente int,
-    FOREIGN KEY (IdCliente) REFERENCES Cliente(IdCliente)
-);
-
-CREATE TABLE TelefonoAdministrador (
-    IdAdministrador int,
-    FOREIGN KEY (IdAdministrador) REFERENCES Administrador(IdAdministrador)
-);
-
-CREATE TABLE TelefonoRepartidor (
-    IdRepartidor int,
-    FOREIGN KEY (IdRepartidor) REFERENCES Repartidor(IdRepartidor)
-);
-
-CREATE TABLE TelefonoCliente (
-    IdCliente int,
-    FOREIGN KEY (IdCliente) REFERENCES Cliente(IdCliente)
-);
-
-CREATE TABLE DireccionAdministrador (
-    IdAdministrador int,
-    FOREIGN KEY (IdAdministrador) REFERENCES Administrador(IdAdministrador)
-);
-
-CREATE TABLE DireccionRepartidor (
-    IdRepartidor int,
-    FOREIGN KEY (IdRepartidor) REFERENCES Repartidor(IdRepartidor)
-);
-
-CREATE TABLE DireccionCliente (
-    IdCliente int,
-    FOREIGN KEY (IdCliente) REFERENCES Cliente(IdCliente)
+CREATE TABLE direccion(
+	Direccion			VARCHAR(100) 	NOT NULL,
+	IdUsuario 			INT		NOT NULL,
+	CONSTRAINT pk_direccion PRIMARY KEY (direccion,IdUsuario),
+	CONSTRAINT fk_direccion_usuario FOREIGN KEY(IdUsuario) REFERENCES usuario(IdUsuario) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 /**
@@ -156,6 +121,5 @@ CREATE TABLE Formar (
 CREATE TABLE Pertenecer (
     IdAlimento int,
     IdCategoria int,
-    FOREIGN KEY (IdAlimento) REFERENCES Alimento(IdAlimento)
-    FOREIGN KEY (IdCategoria) REFERENCES Categoria(IdCategoria),
-);
+    FOREIGN KEY (IdAlimento) REFERENCES Alimento(IdAlimento),
+    FOREIGN KEY (IdCategoria) REFERENCES Categoria(IdCategoria));
