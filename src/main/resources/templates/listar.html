@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html  xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta  http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>iEatIt</title>
+</head>
+<body>
+<div class="container">
+     <table>
+     	<thead>
+     	<tr>
+            <th class="text-center" scope="col"> # </th>
+            <th class="text-center" scope="col"> Nombre </th>
+            <th class="text-center" scope="col"> Precio </th>
+            <th class="text-center" scope="col"> Descripción </th>
+        </tr>
+     	</thead>
+     	<tbody class="text-center">
+                    <tr th:each="alimento: ${alimentos}">
+                        <th scope="row" th:text="${alimento.id}" />
+                        <td th:text="${alimento.nombre}" />
+                        <td th:text="${alimento.precio}" />
+                        <td th:text="${alimento.descripcion}" />
+                    </tr>
+                </tbody>
+     </table>
+</div>
+</body>
+</html>
